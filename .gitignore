@@ -1,0 +1,13 @@
+__pycache__/
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+CLAUDE.local.md
+# data, weights and media stay out of git
+data/
+runs/
+*.pt
+*.onnx
+*.mp4
+*.avi
