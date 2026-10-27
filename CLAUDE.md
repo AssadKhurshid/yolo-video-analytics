@@ -18,4 +18,4 @@ Milestones (tick them in the 365 Build Log):
 5. Count accuracy vs hand count on 2 clips
 6. README + demo GIF
 
-Current status: skeleton created. Next: milestone 1.
+Current status: milestone 1 in progress, line-crossing counter ported. Next: port parking zone occupancy.
