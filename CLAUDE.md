@@ -18,4 +18,4 @@ Milestones (tick them in the 365 Build Log):
 5. Count accuracy vs hand count on 2 clips
 6. README + demo GIF
 
-Current status: milestone 2 in progress, YOLO + tracker pipeline wired (count_video). Next: first real-clip run on Kaggle.
+Current status: milestone 2 done. First Kaggle run on pedestrian.mp4 (yolo11n, mid line): in 5, out 3, not yet checked by hand. Next: milestone 3, zone occupancy mode.
