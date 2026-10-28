@@ -11,3 +11,4 @@ runs/
 *.onnx
 *.mp4
 *.avi
+out/
