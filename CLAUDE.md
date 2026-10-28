@@ -18,4 +18,4 @@ Milestones (tick them in the 365 Build Log):
 5. Count accuracy vs hand count on 2 clips
 6. README + demo GIF
 
-Current status: milestone 1 done (line counter + zone occupancy ported, tested). Next: milestone 2, YOLO + tracker feeding LineCounter.
+Current status: milestone 2 in progress, YOLO + tracker pipeline wired (count_video). Next: first real-clip run on Kaggle.
