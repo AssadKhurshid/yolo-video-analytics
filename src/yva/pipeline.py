@@ -1,6 +1,14 @@
-"""Feed YOLO tracking output into a LineCounter."""
+"""Feed YOLO output into a LineCounter or zone occupancy."""
+
+from collections.abc import Iterable
 
 from yva.counting import LineCounter, Point
+from yva.zones import occupancy
+
+
+def box_centers(result) -> list[Point]:
+    """Center (x, y) of every box in one frame of ultralytics output."""
+    return [((x1 + x2) / 2, (y1 + y2) / 2) for x1, y1, x2, y2 in result.boxes.xyxy.tolist()]
 
 
 def update_counter(counter: LineCounter, result) -> None:
@@ -10,11 +18,21 @@ def update_counter(counter: LineCounter, result) -> None:
     Each box becomes (track ID, box center). Frames where the tracker has no
     IDs yet (boxes.id is None) are skipped.
     """
-    boxes = result.boxes
-    if boxes.id is None:
+    if result.boxes.id is None:
         return
-    for (x1, y1, x2, y2), track_id in zip(boxes.xyxy.tolist(), boxes.id.int().tolist()):
-        counter.update(track_id, ((x1 + x2) / 2, (y1 + y2) / 2))
+    for track_id, center in zip(result.boxes.id.int().tolist(), box_centers(result)):
+        counter.update(track_id, center)
+
+
+def zone_shares(zones: dict[str, list[Point]], results: Iterable) -> dict[str, float]:
+    """Share of frames (0 to 1) in which each zone holds at least one box center."""
+    occupied = dict.fromkeys(zones, 0)
+    frames = 0
+    for result in results:
+        frames += 1
+        for name, taken in occupancy(zones, box_centers(result)).items():
+            occupied[name] += taken
+    return {name: n / frames for name, n in occupied.items()}
 
 
 def count_video(
@@ -31,3 +49,16 @@ def count_video(
     for result in YOLO(model).track(source, stream=True, persist=True, classes=classes, verbose=False):
         update_counter(counter, result)
     return counter
+
+
+def occupancy_video(
+    source: str, zones: dict[str, list[Point]], model: str = "yolo11n.pt", classes: list[int] | None = None
+) -> dict[str, float]:
+    """Detect objects in a video and return each zone's share of frames occupied.
+
+    No tracker: "is the zone taken?" only needs detections in each frame.
+    Needs the video extra: pip install -e ".[video]".
+    """
+    from ultralytics import YOLO
+
+    return zone_shares(zones, YOLO(model).predict(source, stream=True, classes=classes, verbose=False))

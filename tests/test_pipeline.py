@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 
 from yva.counting import LineCounter
-from yva.pipeline import update_counter
+from yva.pipeline import update_counter, zone_shares
 
 
 class FakeTensor:
@@ -36,3 +36,15 @@ def test_frame_without_track_ids_is_skipped():
     update_counter(c, frame([[40, -20, 60, 0]], None))
     update_counter(c, frame([[40, 0, 60, 20]], [7.0]))
     assert (c.count_in, c.count_out) == (0, 0)  # first sighting of track 7 is below the line
+
+
+ZONES = {"A1": [(0, 0), (10, 0), (10, 10), (0, 10)], "A2": [(20, 0), (30, 0), (30, 10), (20, 10)]}
+
+
+def test_zone_taken_in_one_of_two_frames():
+    frames = [frame([[2, 2, 8, 8]], None), frame([[22, 2, 28, 8]], None)]  # car in A1, then in A2
+    assert zone_shares(ZONES, frames) == {"A1": 0.5, "A2": 0.5}
+
+
+def test_frame_without_detections_leaves_zones_free():
+    assert zone_shares(ZONES, [frame([], None)]) == {"A1": 0.0, "A2": 0.0}
