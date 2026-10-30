@@ -28,6 +28,14 @@ counter = count_video("clip.mp4", p1=(0, 240), p2=(854, 240), classes=[0])  # 0 
 print(counter.count_in, counter.count_out)
 ```
 
+Measure how often each parking spot is taken:
+```python
+from yva.pipeline import occupancy_video
+
+zones = {"A1": [(100, 300), (200, 300), (200, 400), (100, 400)]}  # polygon corners in pixels
+print(occupancy_video("parking.mp4", zones, classes=[2]))  # 2 = car -> {"A1": share of frames, 0 to 1}
+```
+
 Run on a Kaggle GPU (needs the [Kaggle CLI](https://github.com/Kaggle/kaggle-api), logged in):
 ```bash
 kaggle kernels push -p notebooks/kaggle_count
@@ -37,7 +45,7 @@ kaggle kernels output assadkhurshid/yva-count-pedestrian -p out/
 ## How it works
 1. **Detect + track**: YOLO with its built-in tracker gives each object a box and a track ID that stays the same across frames.
 2. **Line crossing** (`yva.counting.LineCounter`): each track's box center is compared with its previous position. A crossing is counted when the two positions are on opposite sides of the line (sign of a 2D cross product) and the step passes between the line's end points. Works for any line angle and for fast objects that jump over the line between frames.
-3. **Zone occupancy** (`yva.zones`): a zone is occupied when at least one object center is inside its polygon (ray casting). Two objects in one zone still count as one occupied zone.
+3. **Zone occupancy** (`yva.zones`): a zone is occupied when at least one object center is inside its polygon (ray casting). Two objects in one zone still count as one occupied zone. On video, `occupancy_video` reports each zone's share of frames occupied (0 to 1). It uses plain detection, no tracker: "is the spot taken?" doesn't need to know which car it is.
 
 ## Limitations
 - Each track is counted at most once per direction. A person who crosses in, out and in again counts as in 1, out 1.
