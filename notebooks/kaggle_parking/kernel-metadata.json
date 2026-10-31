@@ -1,0 +1,13 @@
+{
+  "id": "assadkhurshid/yva-parking-occupancy",
+  "title": "yva parking occupancy",
+  "code_file": "count.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["iasadpanwhar/parking-lot-detection-counter"],
+  "competition_sources": [],
+  "kernel_sources": []
+}

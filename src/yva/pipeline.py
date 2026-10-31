@@ -52,13 +52,19 @@ def count_video(
 
 
 def occupancy_video(
-    source: str, zones: dict[str, list[Point]], model: str = "yolo11n.pt", classes: list[int] | None = None
+    source: str,
+    zones: dict[str, list[Point]],
+    model: str = "yolo11n.pt",
+    classes: list[int] | None = None,
+    imgsz: int = 640,
 ) -> dict[str, float]:
     """Detect objects in a video and return each zone's share of frames occupied.
 
     No tracker: "is the zone taken?" only needs detections in each frame.
-    Needs the video extra: pip install -e ".[video]".
+    `imgsz` is the size YOLO resizes frames to; raise it for small objects
+    (e.g. cars seen from a drone). Needs the video extra: pip install -e ".[video]".
     """
     from ultralytics import YOLO
 
-    return zone_shares(zones, YOLO(model).predict(source, stream=True, classes=classes, verbose=False))
+    results = YOLO(model).predict(source, stream=True, classes=classes, imgsz=imgsz, verbose=False)
+    return zone_shares(zones, results)
