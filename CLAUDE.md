@@ -18,4 +18,4 @@ Milestones (tick them in the 365 Build Log):
 5. Count accuracy vs hand count on 2 clips
 6. README + demo GIF
 
-Current status: milestone 2 done. First Kaggle run on pedestrian.mp4 (yolo11n, mid line): in 5, out 3, not yet checked by hand. Milestone 3 in progress: occupancy_video wired (share of frames each zone is taken). Next: real parking clip run on Kaggle.
+Current status: milestone 2 done. First Kaggle run on pedestrian.mp4 (yolo11n, mid line): in 5, out 3, not yet checked by hand. Milestone 3 in progress: parking run on Kaggle (396 spots, drone view) gave 0 detections with COCO yolo11n at 640 and 1920. Next: aerial model (yolo11n-obb, DOTA), needs box_centers to read result.obb.

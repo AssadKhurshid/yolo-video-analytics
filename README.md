@@ -13,6 +13,16 @@ The tool count is from one real run on Kaggle (25 s for the whole clip, includin
 
 Clip: `pedestrian.mp4` from the Kaggle dataset [jayitabhattacharyya/social-distance](https://www.kaggle.com/datasets/jayitabhattacharyya/social-distance), listed as Apache-2.0 (the uploader gives YouTube as the source). Not stored in this repo.
 
+**Parking occupancy** (drone view, 396 spots from the dataset's mask, cars/buses/trucks only)
+| Clip | Model | Input size | Mean share of frames occupied | Spots taken >50% of frames |
+| --- | --- | --- | --- | --- |
+| parking_1920_1080.mp4 (28 s, 849 frames) | yolo11n (COCO), ultralytics 8.4.194 | 640 | 0.0 | 0 / 396 |
+| same | same | 1920 | 0.0 | 0 / 396 |
+
+The COCO-trained model finds no vehicles at all in this top-down view, even at full resolution (0 detections on the first frame), although most spots are visibly taken. COCO cars are photographed from the side; from above, a car is a small rectangle the model has not learned. Next step: a model trained on aerial images.
+
+Clip: `parking_1920_1080.mp4` and `mask_1920_1080.png` from the Kaggle dataset [iasadpanwhar/parking-lot-detection-counter](https://www.kaggle.com/datasets/iasadpanwhar/parking-lot-detection-counter), listed as Apache-2.0. Not stored in this repo.
+
 ## Run it
 ```bash
 pip install -e ".[dev]"        # core + tests, no YOLO
@@ -53,3 +63,4 @@ kaggle kernels output assadkhurshid/yva-count-pedestrian -p out/
 - The box center is used as the object's position. For people seen from above or at an angle, the feet (box bottom) can be a better point.
 - A center exactly on a zone's edge can land either way.
 - Counts above are not yet validated against a hand count.
+- The default COCO model does not work on top-down (drone) footage: it detected 0 cars in the parking clip.
