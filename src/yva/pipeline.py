@@ -7,8 +7,14 @@ from yva.zones import occupancy
 
 
 def box_centers(result) -> list[Point]:
-    """Center (x, y) of every box in one frame of ultralytics output."""
-    return [((x1 + x2) / 2, (y1 + y2) / 2) for x1, y1, x2, y2 in result.boxes.xyxy.tolist()]
+    """Center (x, y) of every box in one frame of ultralytics output.
+
+    Also works for rotated boxes from OBB models such as yolo11n-obb, which put
+    them in result.obb and leave result.boxes as None. A rotated box's axis-aligned
+    bounds (obb.xyxy) have the same center as the box itself.
+    """
+    boxes = result.boxes if result.boxes is not None else result.obb
+    return [((x1 + x2) / 2, (y1 + y2) / 2) for x1, y1, x2, y2 in boxes.xyxy.tolist()]
 
 
 def update_counter(counter: LineCounter, result) -> None:

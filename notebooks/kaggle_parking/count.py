@@ -1,7 +1,7 @@
 """Kaggle job: parking spot occupancy on parking_1920_1080.mp4 (drone view, 396 spots).
 
 Push from the repo root:  kaggle kernels push -p notebooks/kaggle_parking
-Outputs in /kaggle/working: occupancy.json, first_frame.jpg (red = taken, green = free).
+Outputs in /kaggle/working: occupancy.json, first_frame.jpg (aerial model; red = taken, green = free).
 """
 
 import glob
@@ -26,8 +26,13 @@ from ultralytics import YOLO
 from yva.pipeline import box_centers, occupancy_video
 from yva.zones import occupancy
 
-MODEL = "yolo11n.pt"
-CLASSES = [2, 5, 7]  # COCO car, bus, truck
+# (model, classes, input size). COCO: 2 car, 5 bus, 7 truck. DOTA (aerial): 9 large, 10 small vehicle.
+RUNS = [
+    ("yolo11n.pt", [2, 5, 7], 640),
+    ("yolo11n.pt", [2, 5, 7], 1920),
+    ("yolo11n-obb.pt", [9, 10], 1024),  # OBB models are trained at 1024
+    ("yolo11n-obb.pt", [9, 10], 1920),
+]
 video = glob.glob("/kaggle/input/**/parking_1920_1080.mp4", recursive=True)[0]
 mask = cv2.imread(glob.glob("/kaggle/input/**/mask_1920_1080.png", recursive=True)[0], cv2.IMREAD_GRAYSCALE)
 
@@ -39,22 +44,23 @@ zones = {
 }
 
 runs = []
-for imgsz in (640, 1920):  # YOLO's default input size vs full frame width
+for model, classes, imgsz in RUNS:
     start = time.time()
-    shares = occupancy_video(video, zones, model=MODEL, classes=CLASSES, imgsz=imgsz)
+    shares = occupancy_video(video, zones, model=model, classes=classes, imgsz=imgsz)
     runs.append({
+        "model": model,
         "imgsz": imgsz,
         "mean_share_occupied": round(sum(shares.values()) / len(shares), 3),
         "spots_occupied_over_half_the_time": sum(s > 0.5 for s in shares.values()),
         "seconds": round(time.time() - start, 1),
     })
 
-# First frame at full size: which spots are taken, drawn for the README.
+# First frame with the aerial model: which spots are taken, drawn for the README.
 cap = cv2.VideoCapture(video)
 _, frame = cap.read()
 n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 cap.release()
-first = YOLO(MODEL).predict(frame, classes=CLASSES, imgsz=1920, verbose=False)[0]
+first = YOLO("yolo11n-obb.pt").predict(frame, classes=[9, 10], imgsz=1024, verbose=False)[0]
 taken = occupancy(zones, box_centers(first))
 for name, poly in zones.items():
     cv2.rectangle(frame, poly[0], poly[2], (0, 0, 255) if taken[name] else (0, 200, 0), 2)
@@ -64,10 +70,9 @@ result = {
     "video": "parking_1920_1080.mp4",
     "frames": n_frames,
     "spots": len(zones),
-    "model": MODEL,
     "ultralytics": ultralytics.__version__,
     "runs": runs,
-    "first_frame_imgsz_1920": {"detections": len(first.boxes), "spots_taken": sum(taken.values())},
+    "first_frame_obb_1024": {"detections": len(box_centers(first)), "spots_taken": sum(taken.values())},
 }
 with open("occupancy.json", "w") as f:
     json.dump(result, f, indent=2)
