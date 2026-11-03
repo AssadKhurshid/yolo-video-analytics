@@ -11,3 +11,14 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: ruff check .
       - run: pytest
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t yva .
+      - run: docker run -d -p 8000:8000 --name yva yva
+      # Wait up to 60 s for the API to answer, then show the container log on failure.
+      - run: |
+          for i in $(seq 1 30); do curl -sf localhost:8000/health && exit 0; sleep 2; done
+          docker logs yva
+          exit 1
