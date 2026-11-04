@@ -35,6 +35,11 @@ pip install -e ".[video]"      # adds ultralytics for real video
 pytest
 ```
 
+Count a video from the command line:
+```bash
+yva count clip.mp4 --line 0 240 854 240 --classes 0   # prints: in: <n>  out: <n>
+```
+
 Count a video from Python:
 ```python
 from yva.pipeline import count_video

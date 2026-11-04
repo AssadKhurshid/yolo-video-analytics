@@ -9,6 +9,9 @@ description = "Line counting and zone occupancy from video with detection + trac
 requires-python = ">=3.10"
 dependencies = []
 
+[project.scripts]
+yva = "yva.cli:main"
+
 [project.optional-dependencies]
 dev = ["pytest", "ruff", "fastapi", "python-multipart", "httpx"]
 video = ["ultralytics"]
