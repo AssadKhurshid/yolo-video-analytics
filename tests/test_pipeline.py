@@ -1,7 +1,8 @@
+import sys
 from types import SimpleNamespace
 
 from yva.counting import LineCounter
-from yva.pipeline import box_centers, update_counter, zone_shares
+from yva.pipeline import box_centers, occupancy_video, update_counter, zone_shares
 
 
 class FakeTensor:
@@ -50,6 +51,23 @@ def test_box_centers_reads_rotated_boxes():
     # OBB models leave boxes as None and put the boxes' axis-aligned bounds in obb.xyxy.
     obb_frame = SimpleNamespace(boxes=None, obb=SimpleNamespace(xyxy=FakeTensor([[0, 0, 10, 4]])))
     assert box_centers(obb_frame) == [(5, 2)]
+
+
+def test_occupancy_video_passes_max_det_to_yolo(monkeypatch):
+    calls = []
+
+    class FakeYOLO:
+        def __init__(self, model):
+            pass
+
+        def predict(self, source, **kwargs):
+            calls.append(kwargs)
+            return [frame([], None)]
+
+    # occupancy_video imports ultralytics when called, so a fake module replaces it here.
+    monkeypatch.setitem(sys.modules, "ultralytics", SimpleNamespace(YOLO=FakeYOLO))
+    occupancy_video("clip.mp4", ZONES, max_det=1000)
+    assert calls[0]["max_det"] == 1000
 
 
 def test_frame_without_detections_leaves_zones_free():

@@ -63,14 +63,18 @@ def occupancy_video(
     model: str = "yolo11n.pt",
     classes: list[int] | None = None,
     imgsz: int = 640,
+    max_det: int = 300,
 ) -> dict[str, float]:
     """Detect objects in a video and return each zone's share of frames occupied.
 
     No tracker: "is the zone taken?" only needs detections in each frame.
     `imgsz` is the size YOLO resizes frames to; raise it for small objects
-    (e.g. cars seen from a drone). Needs the video extra: pip install -e ".[video]".
+    (e.g. cars seen from a drone). `max_det` caps detections per frame; raise it
+    for scenes with many objects. Needs the video extra: pip install -e ".[video]".
     """
     from ultralytics import YOLO
 
-    results = YOLO(model).predict(source, stream=True, classes=classes, imgsz=imgsz, verbose=False)
+    results = YOLO(model).predict(
+        source, stream=True, classes=classes, imgsz=imgsz, max_det=max_det, verbose=False
+    )
     return zone_shares(zones, results)
