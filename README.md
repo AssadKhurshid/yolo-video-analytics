@@ -13,18 +13,21 @@ The tool count is from one real run on Kaggle (25 s for the whole clip, includin
 
 Clip: `pedestrian.mp4` from the Kaggle dataset [jayitabhattacharyya/social-distance](https://www.kaggle.com/datasets/jayitabhattacharyya/social-distance), listed as Apache-2.0 (the uploader gives YouTube as the source). Not stored in this repo.
 
-**Parking occupancy** (drone view, 396 spots from the dataset's mask, vehicles only; one Kaggle run, ultralytics 8.4.197)
+**Parking occupancy** (drone view, 396 spots from the dataset's mask, vehicles only; one Kaggle run, ultralytics 8.4.202)
 
-![Parking spots on the first frame: red = taken, green = free (yolo11n-obb, 1024)](assets/parking_first_frame.jpg)
+![Parking spots on the first frame: red = taken, green = free (yolo11n-obb, 1024, max_det 1000)](assets/parking_first_frame.jpg)
 
-| Clip | Model | Input size | Mean share of frames occupied | Spots taken >50% of frames | Time (849 frames) |
-| --- | --- | --- | --- | --- | --- |
-| parking_1920_1080.mp4 (28 s) | yolo11n (COCO) | 640 | 0.0 | 0 / 396 | 21.6 s |
-| same | yolo11n (COCO) | 1920 | 0.0 | 0 / 396 | 19.0 s |
-| same | yolo11n-obb (DOTA, aerial) | 1024 | 0.622 | 250 / 396 | 91.7 s |
-| same | yolo11n-obb (DOTA, aerial) | 1920 | 0.599 | 239 / 396 | 104.2 s |
+| Clip | Model | Input size | Max detections | Mean share of frames occupied | Spots taken >50% of frames | Time (849 frames) |
+| --- | --- | --- | --- | --- | --- | --- |
+| parking_1920_1080.mp4 (28 s) | yolo11n (COCO) | 640 | 300 | 0.0 | 0 / 396 | 23.1 s |
+| same | yolo11n (COCO) | 1920 | 300 | 0.0 | 0 / 396 | 19.4 s |
+| same | yolo11n-obb (DOTA, aerial) | 1024 | 300 | 0.622 | 250 / 396 | 88.8 s |
+| same | yolo11n-obb (DOTA, aerial) | 1920 | 300 | 0.599 | 239 / 396 | 98.1 s |
+| same | yolo11n-obb (DOTA, aerial) | 1024 | 1000 | 0.643 | 256 / 396 | 87.1 s |
 
-The COCO-trained model finds no vehicles in this top-down view, even at full resolution: COCO cars are photographed from the side, and from above a car is a small rectangle the model has not learned. The same-size model trained on aerial images (DOTA, rotated boxes) finds them. On the first frame it gives 300 detections and marks 254 spots as taken. 300 is ultralytics' default `max_det`, so some cars may be cut off; the picture shows a few taken spots still marked free. Not yet checked against a hand count.
+The COCO-trained model finds no vehicles in this top-down view, even at full resolution: COCO cars are photographed from the side, and from above a car is a small rectangle the model has not learned. The same-size model trained on aerial images (DOTA, rotated boxes) finds them.
+
+ultralytics' default cap of 300 detections per frame was cutting off cars: with the cap raised to 1000, the first frame gives 336 detections instead of 300, and 258 spots taken instead of 254. The picture still shows a few taken spots marked free. Not yet checked against a hand count.
 
 Clip: `parking_1920_1080.mp4` and `mask_1920_1080.png` from the Kaggle dataset [iasadpanwhar/parking-lot-detection-counter](https://www.kaggle.com/datasets/iasadpanwhar/parking-lot-detection-counter), listed as Apache-2.0. Not stored in this repo.
 
@@ -74,4 +77,4 @@ kaggle kernels output assadkhurshid/yva-count-pedestrian -p out/
 - A center exactly on a zone's edge can land either way.
 - Counts above are not yet validated against a hand count.
 - The default COCO model does not work on top-down (drone) footage: it detected 0 cars in the parking clip. Use an aerial model such as yolo11n-obb there.
-- Detections per frame are capped at 300 (ultralytics default); a large lot can need more.
+- `occupancy_video` keeps ultralytics' default cap of 300 detections per frame; pass a higher `max_det` for a large lot. `count_video` has no such option yet.
