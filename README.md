@@ -2,7 +2,11 @@
 
 Count objects crossing a line and measure zone occupancy in video, using detection + tracking. Runs as a CLI or a small API.
 
-> Work in progress. Demo GIF and hand-count accuracy land with milestones 5 and 6.
+> Work in progress. Hand-count accuracy lands with milestone 5.
+
+![Demo: people tracked with IDs, counted as they cross the red line](assets/demo.gif)
+
+*`pedestrian.mp4` at 2x speed: yolo11n + tracker, final count in 5 / out 3. Made by `notebooks/kaggle_demo/make_gif.py`.*
 
 ## Results
 | Clip | Model | Line | Tool count (in / out) | Hand count | Error |
