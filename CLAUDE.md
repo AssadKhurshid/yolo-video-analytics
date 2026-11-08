@@ -18,4 +18,4 @@ Milestones (tick them in the 365 Build Log):
 5. Count accuracy vs hand count on 2 clips
 6. README + demo GIF
 
-Current status: milestone 2 done. First Kaggle run on pedestrian.mp4 (yolo11n, mid line): in 5, out 3, not yet checked by hand. Milestone 3 done: parking (396 spots, drone view) COCO yolo11n = 0 detections; yolo11n-obb @1024 = 256 spots taken >50% of frames with max_det 1000 (250 with the default 300). Milestone 4: FastAPI /health + /count (yva.api) and Dockerfile (CPU torch, model baked in, built + health-checked in CI). Demo GIF in README (milestone 6, part 1). Next: milestone 5, hand count on 2 clips.
+Current status: milestone 2 done. First Kaggle run on pedestrian.mp4 (yolo11n, mid line): in 5, out 3, not yet checked by hand. Milestone 3 done: parking (396 spots, drone view) COCO yolo11n = 0 detections; yolo11n-obb @1024 = 256 spots taken >50% of frames with max_det 1000 (250 with the default 300). Milestone 4: FastAPI /health + /count (yva.api) and Dockerfile (CPU torch, model baked in, built + health-checked in CI). Demo GIF in README (milestone 6, part 1). CLI: yva count, yva occupancy (JSON zones). Next: milestone 5, hand count on 2 clips.

@@ -45,7 +45,10 @@ pytest
 Count a video from the command line:
 ```bash
 yva count clip.mp4 --line 0 240 854 240 --classes 0   # prints: in: <n>  out: <n>
+yva occupancy parking.mp4 --zones configs/zones.example.json --classes 2   # prints each zone's share of frames occupied
 ```
+
+Zones are a JSON file of zone names and polygon corners in pixels (see `configs/zones.example.json`). For drone footage, use an aerial model: `--model yolo11n-obb.pt --classes 9 10 --imgsz 1024 --max-det 1000`.
 
 Count a video from Python:
 ```python
