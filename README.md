@@ -2,18 +2,18 @@
 
 Count objects crossing a line and measure zone occupancy in video, using detection + tracking. Runs as a CLI or a small API.
 
-> Work in progress. Independent hand counts on 2 clips land with milestone 5.
+> Work in progress. A hand count on a second clip lands with milestone 5.
 
 ![Demo: people tracked with IDs, counted as they cross the red line](assets/demo.gif)
 
 *`pedestrian.mp4` at 2x speed: yolo11n + tracker, final count in 5 / out 3. Made by `notebooks/kaggle_demo/make_gif.py`.*
 
 ## Results
-| Clip | Model | Line | Tool count (in / out) | Human check (in / out) | Difference |
+| Clip | Model | Line | Tool count (in / out) | Hand count (in / out) | Difference |
 | --- | --- | --- | --- | --- | --- |
-| pedestrian.mp4 (30 s, 854x480, 735 frames) | yolo11n, ultralytics 8.4.191 | horizontal, middle of frame | 5 / 3 | 5 / 3, by watching the demo GIF | 0 / 0 |
+| pedestrian.mp4 (30 s, 854x480, 735 frames) | yolo11n, ultralytics 8.4.191 | horizontal, middle of frame | 5 / 3 | 5 / 3 | 0 / 0 |
 
-The tool count is from one real run on Kaggle (25 s for the whole clip, including model load). The human check is not independent: it was made by watching the demo GIF, which shows the tool's boxes and live count. An independent hand count on the original video is still to do.
+The tool count is from one real run on Kaggle (25 s for the whole clip, including model load). The hand count was made by a person watching the clip without the tool's boxes or live count. It is not fully blind: the person had already seen the tool's result. One short clip with 8 crossings is too small to claim an accuracy figure.
 
 Clip: `pedestrian.mp4` from the Kaggle dataset [jayitabhattacharyya/social-distance](https://www.kaggle.com/datasets/jayitabhattacharyya/social-distance), listed as Apache-2.0 (the uploader gives YouTube as the source). Not stored in this repo.
 
@@ -82,6 +82,6 @@ kaggle kernels output assadkhurshid/yva-count-pedestrian -p out/
 - A track that loses its ID (occlusion) and comes back with a new ID can be counted twice.
 - The box center is used as the object's position. For people seen from above or at an angle, the feet (box bottom) can be a better point.
 - A center exactly on a zone's edge can land either way.
-- The line count has only been checked by watching the tool's own annotated output on one clip, not by an independent hand count. The parking results have not been checked by a person.
+- The line count is checked against a hand count on one clip only, by someone who had already seen the tool's result. The parking results have not been checked by a person.
 - The default COCO model does not work on top-down (drone) footage: it detected 0 cars in the parking clip. Use an aerial model such as yolo11n-obb there.
 - `occupancy_video` keeps ultralytics' default cap of 300 detections per frame; pass a higher `max_det` for a large lot. `count_video` has no such option yet.
