@@ -1,0 +1,13 @@
+{
+  "id": "assadkhurshid/yva-count-street",
+  "title": "yva count street",
+  "code_file": "count.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["arshadrahmanziban/traffic-video-dataset"],
+  "competition_sources": [],
+  "kernel_sources": []
+}
