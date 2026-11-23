@@ -18,4 +18,4 @@ Milestones (tick them in the 365 Build Log):
 5. Count accuracy vs hand count on 2 clips
 6. README + demo GIF
 
-Current status: milestone 2 done. First Kaggle run on pedestrian.mp4 (yolo11n, mid line): in 5, out 3; hand count on the clip without overlay matches (counter had already seen the tool result). Milestone 3 done: parking (396 spots, drone view) COCO yolo11n = 0 detections; yolo11n-obb @1024 = 256 spots taken >50% of frames with max_det 1000 (250 with the default 300). Milestone 4: FastAPI /health + /count (yva.api) and Dockerfile (CPU torch, model baked in, built + health-checked in CI). Demo GIF in README (milestone 6, part 1). CLI: yva count, yva occupancy (JSON zones). Next: milestone 5, clip 2 = Talaimari/Weast.mp4 112-142 s (GFDL, handheld street), line y=480; job in notebooks/kaggle_street, run only after the blind hand count.
+Current status: DONE (Nov 2026). Milestones 1-4 and 6 done; milestone 5 closed with a hand count on 1 clip (pedestrian, 5/3 matches; not fully blind). Street clip job exists but has no hand count. Kaggle notebooks public. Optional later: hand count the street clip.

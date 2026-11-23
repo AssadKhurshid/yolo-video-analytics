@@ -2,8 +2,6 @@
 
 Count objects crossing a line and measure zone occupancy in video, using detection + tracking. Runs as a CLI or a small API.
 
-> Work in progress. A hand count on a second clip lands with milestone 5.
-
 ![Demo: people tracked with IDs, counted as they cross the red line](assets/demo.gif)
 
 *`pedestrian.mp4` at 2x speed: yolo11n + tracker, final count in 5 / out 3. Made by `notebooks/kaggle_demo/make_gif.py`.*
@@ -36,6 +34,8 @@ ultralytics' default cap of 300 detections per frame was cutting off cars: with 
 Clip: `parking_1920_1080.mp4` and `mask_1920_1080.png` from the Kaggle dataset [iasadpanwhar/parking-lot-detection-counter](https://www.kaggle.com/datasets/iasadpanwhar/parking-lot-detection-counter), listed as Apache-2.0. Not stored in this repo.
 
 ## Run it
+[![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/assadkhurshid/yva-count-pedestrian)
+
 ```bash
 pip install -e ".[dev]"        # core + tests, no YOLO
 pip install -e ".[video]"      # adds ultralytics for real video
@@ -66,7 +66,22 @@ zones = {"A1": [(100, 300), (200, 300), (200, 400), (100, 400)]}  # polygon corn
 print(occupancy_video("parking.mp4", zones, classes=[2]))  # 2 = car -> {"A1": share of frames, 0 to 1}
 ```
 
-Run on a Kaggle GPU (needs the [Kaggle CLI](https://github.com/Kaggle/kaggle-api), logged in):
+Run the API in Docker (CPU, model included in the image):
+```bash
+docker build -t yva .
+docker run -p 8000:8000 yva
+curl -F video=@clip.mp4 -F x1=0 -F y1=240 -F x2=854 -F y2=240 -F classes=0 localhost:8000/count
+```
+
+The results above come from public Kaggle notebooks (GPU). Each one installs this repo from GitHub and calls `src/`:
+| Notebook | What it makes |
+| --- | --- |
+| [yva-count-pedestrian](https://www.kaggle.com/code/assadkhurshid/yva-count-pedestrian) | Line count on `pedestrian.mp4` |
+| [yva-parking-occupancy](https://www.kaggle.com/code/assadkhurshid/yva-parking-occupancy) | Parking occupancy table and picture |
+| [yva-demo-gif](https://www.kaggle.com/code/assadkhurshid/yva-demo-gif) | The demo GIF |
+| [yva-count-street](https://www.kaggle.com/code/assadkhurshid/yva-count-street) | Vehicle count on a 30 s handheld street clip (no hand count, so not in the results) |
+
+To rerun one with the [Kaggle CLI](https://github.com/Kaggle/kaggle-api):
 ```bash
 kaggle kernels push -p notebooks/kaggle_count
 kaggle kernels output assadkhurshid/yva-count-pedestrian -p out/
